@@ -1,8 +1,26 @@
 package logging
 
 import (
+	"fmt"
 	"log"
 )
+
+const (
+	Debug int = iota
+	Info
+	Warning
+	Error
+)
+
+var Level = Debug
+
+func SetLevel(l int) error {
+	if l < 0 || l > Error {
+		return fmt.Errorf("Log level must be between 0 and %d", Error)
+	}
+	Level = l
+	return nil
+}
 
 var (
 	RESET       = "\033[0m"
@@ -25,21 +43,31 @@ var (
 )
 
 func LogDebug(message string) {
-	log.Printf("%s%s%s\n\n", CYAN, message, RESET)
+	if Level <= Debug {
+		log.Printf("%s%s%s\n\n", CYAN, message, RESET)
+	}
 }
 
 func LogInfo(message string) {
-	log.Printf("%s%s%s\n\n", BOLDBLUE, message, RESET)
+	if Level <= Info {
+		log.Printf("%s%s%s\n\n", BOLDBLUE, message, RESET)
+	}
 }
 
 func LogWarning(message string) {
-	log.Printf("%s%s%s\n\n", YELLOW, message, RESET)
+	if Level <= Warning {
+		log.Printf("%s%s%s\n\n", YELLOW, message, RESET)
+	}
 }
 
 func LogError(err error) {
-	log.Printf("%s%v%s\n\n", RED, err, RESET)
+	if Level <= Error {
+		log.Printf("%s%v%s\n\n", RED, err, RESET)
+	}
 }
 
 func LogFatalError(err error) {
-	log.Fatalf("%s%v%s\n\n", BOLDRED, err, RESET)
+	if Level <= Error {
+		log.Fatalf("%s%v%s\n\n", BOLDRED, err, RESET)
+	}
 }
